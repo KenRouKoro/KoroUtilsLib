@@ -2,11 +2,13 @@ plugins {
     id 'fabric-loom' version '1.0-SNAPSHOT'
     id 'maven-publish'
     id "io.freefair.lombok" version "6.5.1"
+
 }
+apply plugin: 'maven-publish'
 
 version = project.mod_version
 group = project.maven_group
-
+archivesBaseName = project.archives_base_name
 repositories {
     // Add repositories to retrieve artifacts from in here.
     // You should only use this when depending on other mods because
@@ -35,9 +37,9 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     //hutool依赖
-    includeImplementation "cn.hutool:hutool-all:5.8.9"
+    includeImplementation "cn.hutool:hutool-all:${project.hutool_version}"
     //ws依赖
-    includeImplementation "org.java-websocket:Java-WebSocket:1.5.3"
+    includeImplementation "org.java-websocket:Java-WebSocket:${project.websocket_version}"
 }
 
 processResources {
@@ -83,8 +85,12 @@ jar {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            from components.java
+            groupId group // groupId
+            artifactId archivesBaseName // artifactId
+            version version // 发布版本
+            description "A Fabric Lib Mod version ${project.version},for Minecraft ${project.minecraft_version},hutool v${project.version},Java-WebSocket v${project.websocket_version}" // 说明描述
         }
+
     }
 
     // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
@@ -93,5 +99,15 @@ publishing {
         // Notice: This block does NOT have the same function as the block in the top level.
         // The repositories here will be used for publishing your artifact, not for
         // retrieving dependencies.
+        maven {
+            url 'https://gitea.korostudio.cn/api/packages/koro/maven' // 仓库地址
+            credentials(HttpHeaderCredentials) {
+                name = "Authorization"
+                value = "token ${koro_token}"
+            }
+            authentication {
+                header(HttpHeaderAuthentication)
+            }
+        }
     }
 }
