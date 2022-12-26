@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.0-SNAPSHOT'
+    id 'fabric-loom' version '1.0.10'
     id 'maven-publish'
     id "io.freefair.lombok" version "6.5.1"
 
@@ -9,12 +9,18 @@ apply plugin: 'maven-publish'
 version = project.mod_version
 group = project.maven_group
 archivesBaseName = project.archives_base_name
+
 repositories {
     // Add repositories to retrieve artifacts from in here.
     // You should only use this when depending on other mods because
     // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html
     // for more information about repositories.
+    // this below is what appears to be missing in your build
+    maven {
+        name = 'Fabric'
+        url = 'https://maven.fabricmc.net/'
+    }
 }
 configurations {
     includeModImplementation
@@ -103,7 +109,7 @@ publishing {
             url 'https://gitea.korostudio.cn/api/packages/koro/maven' // 仓库地址
             credentials(HttpHeaderCredentials) {
                 name = "Authorization"
-                value = "token ${koro_token}"
+                value = "token ${koro_token}"//个人密钥
             }
             authentication {
                 header(HttpHeaderAuthentication)
